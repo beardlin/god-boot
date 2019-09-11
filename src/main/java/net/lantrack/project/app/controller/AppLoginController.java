@@ -2,7 +2,8 @@
 package net.lantrack.project.app.controller;
 
 
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.validator.ValidatorUtils;
 import net.lantrack.project.app.form.LoginForm;
 import net.lantrack.project.app.service.UserService;
@@ -26,7 +27,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/app")
 @Api("APP登录接口")
-public class AppLoginController {
+public class AppLoginController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
@@ -37,21 +38,15 @@ public class AppLoginController {
      */
     @PostMapping("login")
     @ApiOperation("登录")
-    public R login(@RequestBody LoginForm form){
+    public ReturnEntity login(@RequestBody LoginForm form){
         //表单校验
         ValidatorUtils.validateEntity(form);
-
         //用户登录
         long userId = userService.login(form);
-
         //生成token
         String token = jwtUtils.generateToken(userId);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("token", token);
-        map.put("expire", jwtUtils.getExpire());
-
-        return R.ok(map);
+        return getR().put("token",token)
+                .put("expire",jwtUtils.getExpire());
     }
 
 }

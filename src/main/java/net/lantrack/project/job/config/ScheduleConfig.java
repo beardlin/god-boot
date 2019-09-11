@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 /**
- *@Description 定时任务配置
+ *@Description 定时任务配置  详情参考文档 https://www.w3cschool.cn/quartz_doc/
  *@Author lantrack
  *@Date 2019/8/22  18:19
  */

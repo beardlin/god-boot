@@ -4,7 +4,7 @@ package net.lantrack.project.job.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import net.lantrack.framework.common.utils.PageUtils;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.framework.common.utils.Query;
 import net.lantrack.project.job.dao.ScheduleJobLogDao;
 import net.lantrack.project.job.entity.ScheduleJobLogEntity;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class ScheduleJobLogServiceImpl extends ServiceImpl<ScheduleJobLogDao, ScheduleJobLogEntity> implements ScheduleJobLogService {
 
 	@Override
-	public PageUtils queryPage(Map<String, Object> params) {
+	public PageEntity queryPage(Map<String, Object> params) {
 		String jobId = (String)params.get("jobId");
 
 		IPage<ScheduleJobLogEntity> page = this.page(
@@ -30,7 +30,7 @@ public class ScheduleJobLogServiceImpl extends ServiceImpl<ScheduleJobLogDao, Sc
 			new QueryWrapper<ScheduleJobLogEntity>().like(StringUtils.isNotBlank(jobId),"job_id", jobId)
 		);
 
-		return new PageUtils(page);
+		return new PageEntity(page);
 	}
 
 }

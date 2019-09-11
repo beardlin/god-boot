@@ -30,22 +30,6 @@ public class OAuth2Realm extends AuthorizingRealm {
     }
 
     /**
-     * 授权(验证权限时调用)
-     */
-    @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        SysUserEntity user = (SysUserEntity)principals.getPrimaryPrincipal();
-        Long userId = user.getUserId();
-
-        //用户权限列表
-        Set<String> permsSet = shiroService.getUserPermissions(userId);
-
-        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        info.setStringPermissions(permsSet);
-        return info;
-    }
-
-    /**
      * 认证(登录时调用)
      */
     @Override
@@ -69,4 +53,22 @@ public class OAuth2Realm extends AuthorizingRealm {
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, accessToken, getName());
         return info;
     }
+
+    /**
+     * 授权(验证权限时调用)
+     */
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        SysUserEntity user = (SysUserEntity)principals.getPrimaryPrincipal();
+        Long userId = user.getUserId();
+
+        //用户权限列表
+        Set<String> permsSet = shiroService.getUserPermissions(userId);
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        info.setStringPermissions(permsSet);
+        return info;
+    }
+
+
 }

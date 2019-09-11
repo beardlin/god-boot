@@ -2,9 +2,10 @@
 package net.lantrack.project.sys.controller;
 
 import net.lantrack.framework.common.annotation.SysLog;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.PageEntity;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.PageUtils;
-import net.lantrack.framework.common.utils.R;
 import net.lantrack.framework.common.validator.Assert;
 import net.lantrack.framework.common.validator.ValidatorUtils;
 import net.lantrack.framework.common.validator.group.AddGroup;
@@ -14,6 +15,7 @@ import net.lantrack.project.sys.form.PasswordForm;
 import net.lantrack.project.sys.service.SysUserRoleService;
 import net.lantrack.project.sys.service.SysUserService;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/sys/user")
-public class SysUserController extends AbstractController {
+public class SysUserController extends BaseController {
 	@Autowired
 	private SysUserService sysUserService;
 	@Autowired
@@ -41,22 +43,22 @@ public class SysUserController extends AbstractController {
 	 */
 	@GetMapping("/list")
 	@RequiresPermissions("sys:user:list")
-	public R list(@RequestParam Map<String, Object> params){
+	public ReturnEntity list(@RequestParam Map<String, Object> params){
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 		//只有超级管理员，才能查看所有管理员列表
-		if(getUserId() != Constant.SUPER_ADMIN){
-			params.put("createUserId", getUserId());
+		if(user.getUserId() != Constant.SUPER_ADMIN){
+			params.put("createUserId", user.getUserId());
 		}
-		PageUtils page = sysUserService.queryPage(params);
-
-		return R.ok().put("page", page);
+		return getR().result(sysUserService.queryPage(params));
 	}
 	
 	/**
 	 * 获取登录的用户信息
 	 */
 	@GetMapping("/info")
-	public R info(){
-		return R.ok().put("user", getUser());
+	public ReturnEntity info(){
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		return getR().result(user);
 	}
 	
 	/**
@@ -64,21 +66,21 @@ public class SysUserController extends AbstractController {
 	 */
 	@SysLog("修改密码")
 	@PostMapping("/password")
-	public R password(@RequestBody PasswordForm form){
+	public ReturnEntity password(@RequestBody PasswordForm form){
 		Assert.isBlank(form.getNewPassword(), "新密码不为能空");
-		
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 		//sha256加密
-		String password = new Sha256Hash(form.getPassword(), getUser().getSalt()).toHex();
+		String password = new Sha256Hash(form.getPassword(), user.getSalt()).toHex();
 		//sha256加密
-		String newPassword = new Sha256Hash(form.getNewPassword(), getUser().getSalt()).toHex();
+		String newPassword = new Sha256Hash(form.getNewPassword(), user.getSalt()).toHex();
 				
 		//更新密码
-		boolean flag = sysUserService.updatePassword(getUserId(), password, newPassword);
+		boolean flag = sysUserService.updatePassword(user.getUserId(), password, newPassword);
+		ReturnEntity r = getR();
 		if(!flag){
-			return R.error("原密码不正确");
+			return r.err("原密码不正确");
 		}
-		
-		return R.ok();
+		return r;
 	}
 	
 	/**
@@ -86,14 +88,14 @@ public class SysUserController extends AbstractController {
 	 */
 	@GetMapping("/info/{userId}")
 	@RequiresPermissions("sys:user:info")
-	public R info(@PathVariable("userId") Long userId){
+	public ReturnEntity info(@PathVariable("userId") Long userId){
 		SysUserEntity user = sysUserService.getById(userId);
 		
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(userId);
 		user.setRoleIdList(roleIdList);
 		
-		return R.ok().put("user", user);
+		return getR().result(user);
 	}
 	
 	/**
@@ -102,13 +104,13 @@ public class SysUserController extends AbstractController {
 	@SysLog("保存用户")
 	@PostMapping("/save")
 	@RequiresPermissions("sys:user:save")
-	public R save(@RequestBody SysUserEntity user){
+	public ReturnEntity save(@RequestBody SysUserEntity user){
 		ValidatorUtils.validateEntity(user, AddGroup.class);
-		
-		user.setCreateUserId(getUserId());
+		SysUserEntity currentUser = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		user.setCreateUserId(currentUser.getUserId());
 		sysUserService.saveUser(user);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -117,13 +119,13 @@ public class SysUserController extends AbstractController {
 	@SysLog("修改用户")
 	@PostMapping("/update")
 	@RequiresPermissions("sys:user:update")
-	public R update(@RequestBody SysUserEntity user){
+	public ReturnEntity update(@RequestBody SysUserEntity user){
 		ValidatorUtils.validateEntity(user, UpdateGroup.class);
-
-		user.setCreateUserId(getUserId());
+		SysUserEntity currentUser = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		user.setCreateUserId(currentUser.getUserId());
 		sysUserService.update(user);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -132,17 +134,19 @@ public class SysUserController extends AbstractController {
 	@SysLog("删除用户")
 	@PostMapping("/delete")
 	@RequiresPermissions("sys:user:delete")
-	public R delete(@RequestBody Long[] userIds){
+	public ReturnEntity delete(@RequestBody Long[] userIds){
+		ReturnEntity r = getR();
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 		if(ArrayUtils.contains(userIds, 1L)){
-			return R.error("系统管理员不能删除");
+			return r.err("系统管理员不能删除");
 		}
 		
-		if(ArrayUtils.contains(userIds, getUserId())){
-			return R.error("当前用户不能删除");
+		if(ArrayUtils.contains(userIds, user.getUserId())){
+			return r.err("当前用户不能删除");
 		}
 		
 		sysUserService.deleteBatch(userIds);
 		
-		return R.ok();
+		return r;
 	}
 }

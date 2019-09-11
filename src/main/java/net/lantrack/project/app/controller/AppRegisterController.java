@@ -2,7 +2,8 @@
 package net.lantrack.project.app.controller;
 
 
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.validator.ValidatorUtils;
 import net.lantrack.project.app.entity.UserEntity;
 import net.lantrack.project.app.form.RegisterForm;
@@ -26,13 +27,13 @@ import java.util.Date;
 @RestController
 @RequestMapping("/app")
 @Api("APP注册接口")
-public class AppRegisterController {
+public class AppRegisterController extends BaseController {
     @Autowired
     private UserService userService;
 
     @PostMapping("register")
     @ApiOperation("注册")
-    public R register(@RequestBody RegisterForm form){
+    public ReturnEntity register(@RequestBody RegisterForm form){
         //表单校验
         ValidatorUtils.validateEntity(form);
 
@@ -43,6 +44,6 @@ public class AppRegisterController {
         user.setCreateTime(new Date());
         userService.save(user);
 
-        return R.ok();
+        return getR().suc("注册成功");
     }
 }

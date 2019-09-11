@@ -2,7 +2,7 @@
 package net.lantrack.project.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import net.lantrack.framework.common.utils.PageUtils;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.project.sys.entity.SysConfigEntity;
 
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface SysConfigService extends IService<SysConfigEntity> {
 
-	PageUtils queryPage(Map<String, Object> params);
+	PageEntity queryPage(Map<String, Object> params);
 	
 	/**
 	 * 保存配置信息

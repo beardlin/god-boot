@@ -4,9 +4,9 @@ package net.lantrack.project.sys.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.framework.common.exception.GlobalException;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.PageUtils;
 import net.lantrack.framework.common.utils.Query;
 import net.lantrack.project.sys.dao.SysRoleDao;
 import net.lantrack.project.sys.entity.SysRoleEntity;
@@ -39,7 +39,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
     private SysUserRoleService sysUserRoleService;
 
 	@Override
-	public PageUtils queryPage(Map<String, Object> params) {
+	public PageEntity queryPage(Map<String, Object> params) {
 		String roleName = (String)params.get("roleName");
 		Long createUserId = (Long)params.get("createUserId");
 
@@ -50,7 +50,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRoleEntity> i
 				.eq(createUserId != null,"create_user_id", createUserId)
 		);
 
-		return new PageUtils(page);
+		return new PageEntity(page);
 	}
 
     @Override

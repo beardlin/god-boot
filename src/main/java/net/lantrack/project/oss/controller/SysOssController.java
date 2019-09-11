@@ -2,11 +2,12 @@
 package net.lantrack.project.oss.controller;
 
 import com.google.gson.Gson;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.PageEntity;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.exception.GlobalException;
 import net.lantrack.framework.common.utils.ConfigConstant;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.PageUtils;
-import net.lantrack.framework.common.utils.R;
 import net.lantrack.framework.common.validator.ValidatorUtils;
 import net.lantrack.framework.common.validator.group.AliyunGroup;
 import net.lantrack.framework.common.validator.group.QcloudGroup;
@@ -32,7 +33,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("sys/oss")
-public class SysOssController {
+public class SysOssController extends BaseController {
 	@Autowired
 	private SysOssService sysOssService;
     @Autowired
@@ -45,10 +46,10 @@ public class SysOssController {
 	 */
 	@GetMapping("/list")
 	@RequiresPermissions("sys:oss:all")
-	public R list(@RequestParam Map<String, Object> params){
-		PageUtils page = sysOssService.queryPage(params);
+	public ReturnEntity list(@RequestParam Map<String, Object> params){
+		PageEntity page = sysOssService.queryPage(params);
 
-		return R.ok().put("page", page);
+		return getR().result(page);
 	}
 
 
@@ -57,10 +58,10 @@ public class SysOssController {
      */
     @GetMapping("/config")
     @RequiresPermissions("sys:oss:all")
-    public R config(){
+    public ReturnEntity config(){
         CloudStorageConfig config = sysConfigService.getConfigObject(KEY, CloudStorageConfig.class);
 
-        return R.ok().put("config", config);
+        return getR().result(config);
     }
 
 
@@ -69,7 +70,7 @@ public class SysOssController {
 	 */
 	@PostMapping("/saveConfig")
 	@RequiresPermissions("sys:oss:all")
-	public R saveConfig(@RequestBody CloudStorageConfig config){
+	public ReturnEntity saveConfig(@RequestBody CloudStorageConfig config){
 		//校验类型
 		ValidatorUtils.validateEntity(config);
 
@@ -86,7 +87,7 @@ public class SysOssController {
 
         sysConfigService.updateValueByKey(KEY, new Gson().toJson(config));
 
-		return R.ok();
+		return getR();
 	}
 	
 
@@ -95,7 +96,7 @@ public class SysOssController {
 	 */
 	@PostMapping("/upload")
 	@RequiresPermissions("sys:oss:all")
-	public R upload(@RequestParam("file") MultipartFile file) throws Exception {
+	public ReturnEntity upload(@RequestParam("file") MultipartFile file) throws Exception {
 		if (file.isEmpty()) {
 			throw new GlobalException("上传文件不能为空");
 		}
@@ -110,7 +111,7 @@ public class SysOssController {
 		ossEntity.setCreateDate(new Date());
 		sysOssService.save(ossEntity);
 
-		return R.ok().put("url", url);
+		return getR().result(url);
 	}
 
 
@@ -119,10 +120,10 @@ public class SysOssController {
 	 */
 	@PostMapping("/delete")
 	@RequiresPermissions("sys:oss:all")
-	public R delete(@RequestBody Long[] ids){
+	public ReturnEntity delete(@RequestBody Long[] ids){
 		sysOssService.removeByIds(Arrays.asList(ids));
 
-		return R.ok();
+		return getR();
 	}
 
 }

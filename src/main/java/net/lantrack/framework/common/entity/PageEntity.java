@@ -1,9 +1,10 @@
 
-package net.lantrack.framework.common.utils;
+package net.lantrack.framework.common.entity;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  *@Author lantrack
  *@Date 2019/8/22  16:51
  */
-public class PageUtils implements Serializable {
+public class PageEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 总记录数
@@ -32,7 +33,7 @@ public class PageUtils implements Serializable {
 	/**
 	 * 列表数据
 	 */
-	private List<?> list;
+	private Collection<?> list;
 	
 	/**
 	 * 分页
@@ -41,7 +42,7 @@ public class PageUtils implements Serializable {
 	 * @param pageSize    每页记录数
 	 * @param currPage    当前页数
 	 */
-	public PageUtils(List<?> list, int totalCount, int pageSize, int currPage) {
+	public PageEntity(Collection<?> list, int totalCount, int pageSize, int currPage) {
 		this.list = list;
 		this.totalCount = totalCount;
 		this.pageSize = pageSize;
@@ -52,7 +53,7 @@ public class PageUtils implements Serializable {
 	/**
 	 * 分页
 	 */
-	public PageUtils(IPage<?> page) {
+	public PageEntity(IPage<?> page) {
 		this.list = page.getRecords();
 		this.totalCount = (int)page.getTotal();
 		this.pageSize = (int)page.getSize();
@@ -92,11 +93,11 @@ public class PageUtils implements Serializable {
 		this.currPage = currPage;
 	}
 
-	public List<?> getList() {
+	public Collection<?> getList() {
 		return list;
 	}
 
-	public void setList(List<?> list) {
+	public void setList(Collection<?> list) {
 		this.list = list;
 	}
 	

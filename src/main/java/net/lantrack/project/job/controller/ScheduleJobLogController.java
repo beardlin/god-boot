@@ -1,8 +1,9 @@
 
 package net.lantrack.project.job.controller;
 
-import net.lantrack.framework.common.utils.PageUtils;
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.PageEntity;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.project.job.entity.ScheduleJobLogEntity;
 import net.lantrack.project.job.service.ScheduleJobLogService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/sys/scheduleLog")
-public class ScheduleJobLogController {
+public class ScheduleJobLogController extends BaseController {
 	@Autowired
 	private ScheduleJobLogService scheduleJobLogService;
 	
@@ -30,17 +31,17 @@ public class ScheduleJobLogController {
 	 */
 	@RequestMapping("/list")
 	@RequiresPermissions("sys:schedule:log")
-	public R list(@RequestParam Map<String, Object> params){
-		PageUtils page = scheduleJobLogService.queryPage(params);
-		return R.ok().put("page", page);
+	public ReturnEntity list(@RequestParam Map<String, Object> params){
+		PageEntity page = scheduleJobLogService.queryPage(params);
+		return getR().result(page);
 	}
 	
 	/**
 	 * 定时任务日志信息
 	 */
 	@RequestMapping("/info/{logId}")
-	public R info(@PathVariable("logId") Long logId){
+	public ReturnEntity info(@PathVariable("logId") Long logId){
 		ScheduleJobLogEntity log = scheduleJobLogService.getById(logId);
-		return R.ok().put("log", log);
+		return getR().result(log);
 	}
 }

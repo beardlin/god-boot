@@ -2,7 +2,7 @@
 package net.lantrack.project.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import net.lantrack.framework.common.utils.PageUtils;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.project.sys.entity.SysRoleEntity;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface SysRoleService extends IService<SysRoleEntity> {
 
-	PageUtils queryPage(Map<String, Object> params);
+	PageEntity queryPage(Map<String, Object> params);
 
 	void saveRole(SysRoleEntity role);
 

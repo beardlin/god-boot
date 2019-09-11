@@ -2,7 +2,7 @@
 package net.lantrack.project.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.project.sys.entity.SysUserTokenEntity;
 
 /**
@@ -16,7 +16,7 @@ public interface SysUserTokenService extends IService<SysUserTokenEntity> {
 	 * 生成token
 	 * @param userId  用户ID
 	 */
-	R createToken(long userId);
+	ReturnEntity createToken(long userId);
 
 	/**
 	 * 退出，修改token值

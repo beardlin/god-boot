@@ -1,13 +1,15 @@
 
 package net.lantrack.project.sys.controller;
 
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.project.sys.entity.SysUserEntity;
 import net.lantrack.project.sys.form.SysLoginForm;
 import net.lantrack.project.sys.service.SysCaptchaService;
 import net.lantrack.project.sys.service.SysUserService;
 import net.lantrack.project.sys.service.SysUserTokenService;
 import org.apache.commons.io.IOUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +30,7 @@ import java.util.Map;
  *@Date 2019/8/23  10:14
  */
 @RestController
-public class SysLoginController extends AbstractController {
+public class SysLoginController extends BaseController {
 	@Autowired
 	private SysUserService sysUserService;
 	@Autowired
@@ -56,10 +58,10 @@ public class SysLoginController extends AbstractController {
 	 * 登录
 	 */
 	@PostMapping("/sys/login")
-	public Map<String, Object> login(@RequestBody SysLoginForm form)throws IOException {
+	public ReturnEntity login(@RequestBody SysLoginForm form)throws IOException {
 		boolean captcha = sysCaptchaService.validate(form.getUuid(), form.getCaptcha());
 		if(!captcha){
-			return R.error("验证码不正确");
+			return getR().err("验证码不正确");
 		}
 
 		//用户信息
@@ -67,16 +69,16 @@ public class SysLoginController extends AbstractController {
 
 		//账号不存在、密码错误
 		if(user == null || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
-			return R.error("账号或密码不正确");
+			return getR().err("账号或密码不正确");
 		}
 
 		//账号锁定
 		if(user.getStatus() == 0){
-			return R.error("账号已被锁定,请联系管理员");
+			return getR().err("账号已被锁定,请联系管理员");
 		}
 
 		//生成token，并保存到数据库
-		R r = sysUserTokenService.createToken(user.getUserId());
+		ReturnEntity r = sysUserTokenService.createToken(user.getUserId());
 		return r;
 	}
 
@@ -85,9 +87,10 @@ public class SysLoginController extends AbstractController {
 	 * 退出
 	 */
 	@PostMapping("/sys/logout")
-	public R logout() {
-		sysUserTokenService.logout(getUserId());
-		return R.ok();
+	public ReturnEntity logout() {
+		SysUserEntity userEntity = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		sysUserTokenService.logout(userEntity.getUserId());
+		return getR();
 	}
 	
 }

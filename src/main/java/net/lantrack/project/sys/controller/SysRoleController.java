@@ -2,13 +2,15 @@
 package net.lantrack.project.sys.controller;
 
 import net.lantrack.framework.common.annotation.SysLog;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.PageUtils;
-import net.lantrack.framework.common.utils.R;
 import net.lantrack.framework.common.validator.ValidatorUtils;
 import net.lantrack.project.sys.entity.SysRoleEntity;
+import net.lantrack.project.sys.entity.SysUserEntity;
 import net.lantrack.project.sys.service.SysRoleMenuService;
 import net.lantrack.project.sys.service.SysRoleService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,26 +26,27 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/sys/role")
-public class SysRoleController extends AbstractController {
+public class SysRoleController extends BaseController {
 	@Autowired
 	private SysRoleService sysRoleService;
 	@Autowired
 	private SysRoleMenuService sysRoleMenuService;
+
 
 	/**
 	 * 角色列表
 	 */
 	@GetMapping("/list")
 	@RequiresPermissions("sys:role:list")
-	public R list(@RequestParam Map<String, Object> params){
+	public ReturnEntity list(@RequestParam Map<String, Object> params){
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 		//如果不是超级管理员，则只查询自己创建的角色列表
-		if(getUserId() != Constant.SUPER_ADMIN){
-			params.put("createUserId", getUserId());
+		if(user.getUserId() != Constant.SUPER_ADMIN){
+			params.put("createUserId", user.getUserId() );
 		}
 
-		PageUtils page = sysRoleService.queryPage(params);
 
-		return R.ok().put("page", page);
+		return getR().result(sysRoleService.queryPage(params));
 	}
 	
 	/**
@@ -51,16 +54,16 @@ public class SysRoleController extends AbstractController {
 	 */
 	@GetMapping("/select")
 	@RequiresPermissions("sys:role:select")
-	public R select(){
+	public ReturnEntity select(){
 		Map<String, Object> map = new HashMap<>();
-		
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
 		//如果不是超级管理员，则只查询自己所拥有的角色列表
-		if(getUserId() != Constant.SUPER_ADMIN){
-			map.put("create_user_id", getUserId());
+		if(user.getUserId() != Constant.SUPER_ADMIN){
+			map.put("create_user_id", user.getUserId());
 		}
 		List<SysRoleEntity> list = (List<SysRoleEntity>) sysRoleService.listByMap(map);
 		
-		return R.ok().put("list", list);
+		return getR().result(list);
 	}
 	
 	/**
@@ -68,14 +71,14 @@ public class SysRoleController extends AbstractController {
 	 */
 	@GetMapping("/info/{roleId}")
 	@RequiresPermissions("sys:role:info")
-	public R info(@PathVariable("roleId") Long roleId){
+	public ReturnEntity info(@PathVariable("roleId") Long roleId){
 		SysRoleEntity role = sysRoleService.getById(roleId);
 		
 		//查询角色对应的菜单
 		List<Long> menuIdList = sysRoleMenuService.queryMenuIdList(roleId);
 		role.setMenuIdList(menuIdList);
 		
-		return R.ok().put("role", role);
+		return getR().result(role);
 	}
 	
 	/**
@@ -84,13 +87,13 @@ public class SysRoleController extends AbstractController {
 	@SysLog("保存角色")
 	@PostMapping("/save")
 	@RequiresPermissions("sys:role:save")
-	public R save(@RequestBody SysRoleEntity role){
+	public ReturnEntity save(@RequestBody SysRoleEntity role){
 		ValidatorUtils.validateEntity(role);
-		
-		role.setCreateUserId(getUserId());
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		role.setCreateUserId(user.getUserId());
 		sysRoleService.saveRole(role);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -99,13 +102,13 @@ public class SysRoleController extends AbstractController {
 	@SysLog("修改角色")
 	@PostMapping("/update")
 	@RequiresPermissions("sys:role:update")
-	public R update(@RequestBody SysRoleEntity role){
+	public ReturnEntity update(@RequestBody SysRoleEntity role){
 		ValidatorUtils.validateEntity(role);
-		
-		role.setCreateUserId(getUserId());
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		role.setCreateUserId(user.getUserId());
 		sysRoleService.update(role);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -114,9 +117,9 @@ public class SysRoleController extends AbstractController {
 	@SysLog("删除角色")
 	@PostMapping("/delete")
 	@RequiresPermissions("sys:role:delete")
-	public R delete(@RequestBody Long[] roleIds){
+	public ReturnEntity delete(@RequestBody Long[] roleIds){
 		sysRoleService.deleteBatch(roleIds);
 		
-		return R.ok();
+		return getR();
 	}
 }

@@ -1,8 +1,8 @@
 
 package net.lantrack.project.sys.controller;
 
-import net.lantrack.framework.common.utils.PageUtils;
-import net.lantrack.framework.common.utils.R;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.project.sys.service.SysLogService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/sys/log")
-public class SysLogController {
+public class SysLogController extends BaseController {
 	@Autowired
 	private SysLogService sysLogService;
 	
@@ -32,10 +32,9 @@ public class SysLogController {
 	@ResponseBody
 	@GetMapping("/list")
 	@RequiresPermissions("sys:log:list")
-	public R list(@RequestParam Map<String, Object> params){
-		PageUtils page = sysLogService.queryPage(params);
+	public ReturnEntity list(@RequestParam Map<String, Object> params){
 
-		return R.ok().put("page", page);
+		return getR().result(sysLogService.queryPage(params));
 	}
 	
 }

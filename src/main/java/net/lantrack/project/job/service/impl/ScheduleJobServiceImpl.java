@@ -4,8 +4,8 @@ package net.lantrack.project.job.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.PageUtils;
 import net.lantrack.framework.common.utils.Query;
 import net.lantrack.project.job.dao.ScheduleJobDao;
 import net.lantrack.project.job.entity.ScheduleJobEntity;
@@ -48,7 +48,7 @@ public class ScheduleJobServiceImpl extends ServiceImpl<ScheduleJobDao, Schedule
 	}
 
 	@Override
-	public PageUtils queryPage(Map<String, Object> params) {
+	public PageEntity queryPage(Map<String, Object> params) {
 		String beanName = (String)params.get("beanName");
 
 		IPage<ScheduleJobEntity> page = this.page(
@@ -56,7 +56,7 @@ public class ScheduleJobServiceImpl extends ServiceImpl<ScheduleJobDao, Schedule
 			new QueryWrapper<ScheduleJobEntity>().like(StringUtils.isNotBlank(beanName),"bean_name", beanName)
 		);
 
-		return new PageUtils(page);
+		return new PageEntity(page);
 	}
 
 

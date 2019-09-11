@@ -78,3 +78,9 @@ godboot:
     # token有效时长，7天，单位秒
     expire: 604800
     header: token
+  #验证码配置
+  captcha:
+    #    验证码长度
+    length: 4
+    #    验证码字符集
+    chars: qwertyuiopasdfghjklzxcvbnm1234567890

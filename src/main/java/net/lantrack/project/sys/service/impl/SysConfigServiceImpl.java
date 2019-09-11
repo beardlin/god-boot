@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
+import net.lantrack.framework.common.entity.PageEntity;
 import net.lantrack.framework.common.exception.GlobalException;
-import net.lantrack.framework.common.utils.PageUtils;
 import net.lantrack.framework.common.utils.Query;
 import net.lantrack.project.sys.dao.SysConfigDao;
 import net.lantrack.project.sys.entity.SysConfigEntity;
@@ -26,7 +26,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
 	private SysConfigRedis sysConfigRedis;
 
 	@Override
-	public PageUtils queryPage(Map<String, Object> params) {
+	public PageEntity queryPage(Map<String, Object> params) {
 		String paramKey = (String)params.get("paramKey");
 
 		IPage<SysConfigEntity> page = this.page(
@@ -36,7 +36,7 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
 				.eq("status", 1)
 		);
 
-		return new PageUtils(page);
+		return new PageEntity(page);
 	}
 
 	@Override

@@ -2,13 +2,16 @@
 package net.lantrack.project.sys.controller;
 
 import net.lantrack.framework.common.annotation.SysLog;
+import net.lantrack.framework.common.component.BaseController;
+import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.exception.GlobalException;
 import net.lantrack.framework.common.utils.Constant;
-import net.lantrack.framework.common.utils.R;
 import net.lantrack.project.sys.entity.SysMenuEntity;
+import net.lantrack.project.sys.entity.SysUserEntity;
 import net.lantrack.project.sys.service.ShiroService;
 import net.lantrack.project.sys.service.SysMenuService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,20 +26,23 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/sys/menu")
-public class SysMenuController extends AbstractController {
+public class SysMenuController extends BaseController {
 	@Autowired
 	private SysMenuService sysMenuService;
 	@Autowired
 	private ShiroService shiroService;
 
+
+
 	/**
 	 * 导航菜单
 	 */
 	@GetMapping("/nav")
-	public R nav(){
-		List<SysMenuEntity> menuList = sysMenuService.getUserMenuList(getUserId());
-		Set<String> permissions = shiroService.getUserPermissions(getUserId());
-		return R.ok().put("menuList", menuList).put("permissions", permissions);
+	public ReturnEntity nav(){
+		SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+		List<SysMenuEntity> menuList = sysMenuService.getUserMenuList(user.getUserId());
+		Set<String> permissions = shiroService.getUserPermissions(user.getUserId());
+		return getR().put("menuList", menuList).put("permissions", permissions);
 	}
 	
 	/**
@@ -61,7 +67,7 @@ public class SysMenuController extends AbstractController {
 	 */
 	@GetMapping("/select")
 	@RequiresPermissions("sys:menu:select")
-	public R select(){
+	public ReturnEntity select(){
 		//查询列表数据
 		List<SysMenuEntity> menuList = sysMenuService.queryNotButtonList();
 		
@@ -73,7 +79,7 @@ public class SysMenuController extends AbstractController {
 		root.setOpen(true);
 		menuList.add(root);
 		
-		return R.ok().put("menuList", menuList);
+		return getR().result(menuList);
 	}
 	
 	/**
@@ -81,9 +87,9 @@ public class SysMenuController extends AbstractController {
 	 */
 	@GetMapping("/info/{menuId}")
 	@RequiresPermissions("sys:menu:info")
-	public R info(@PathVariable("menuId") Long menuId){
+	public ReturnEntity info(@PathVariable("menuId") Long menuId){
 		SysMenuEntity menu = sysMenuService.getById(menuId);
-		return R.ok().put("menu", menu);
+		return getR().result(menu);
 	}
 	
 	/**
@@ -92,13 +98,13 @@ public class SysMenuController extends AbstractController {
 	@SysLog("保存菜单")
 	@PostMapping("/save")
 	@RequiresPermissions("sys:menu:save")
-	public R save(@RequestBody SysMenuEntity menu){
+	public ReturnEntity save(@RequestBody SysMenuEntity menu){
 		//数据校验
 		verifyForm(menu);
 		
 		sysMenuService.save(menu);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -107,13 +113,13 @@ public class SysMenuController extends AbstractController {
 	@SysLog("修改菜单")
 	@PostMapping("/update")
 	@RequiresPermissions("sys:menu:update")
-	public R update(@RequestBody SysMenuEntity menu){
+	public ReturnEntity update(@RequestBody SysMenuEntity menu){
 		//数据校验
 		verifyForm(menu);
 				
 		sysMenuService.updateById(menu);
 		
-		return R.ok();
+		return getR();
 	}
 	
 	/**
@@ -122,20 +128,21 @@ public class SysMenuController extends AbstractController {
 	@SysLog("删除菜单")
 	@PostMapping("/delete/{menuId}")
 	@RequiresPermissions("sys:menu:delete")
-	public R delete(@PathVariable("menuId") long menuId){
+	public ReturnEntity delete(@PathVariable("menuId") long menuId){
+		ReturnEntity r = getR();
 		if(menuId <= 31){
-			return R.error("系统菜单，不能删除");
+			return r.err("系统菜单，不能删除");
 		}
 
 		//判断是否有子菜单或按钮
 		List<SysMenuEntity> menuList = sysMenuService.queryListParentId(menuId);
 		if(menuList.size() > 0){
-			return R.error("请先删除子菜单或按钮");
+			return r.err("请先删除子菜单或按钮");
 		}
 
 		sysMenuService.delete(menuId);
 
-		return R.ok();
+		return r;
 	}
 	
 	/**
