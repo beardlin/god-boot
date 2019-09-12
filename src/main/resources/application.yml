@@ -80,7 +80,7 @@ godboot:
     header: token
   #验证码配置
   captcha:
-    #    验证码长度
+    #    验证码长度  >4位
     length: 4
-    #    验证码字符集
-    chars: qwertyuiopasdfghjklzxcvbnm1234567890
+    #    验证码字符集 qwertyuiopasdfghjklzxcvbnm1234567890
+    chars: 1234567890
