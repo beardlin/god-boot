@@ -3,6 +3,10 @@ package net.lantrack.project.sys.controller;
 
 import net.lantrack.framework.common.component.BaseController;
 import net.lantrack.framework.common.entity.ReturnEntity;
+import net.lantrack.framework.security.store.SsoLoginStore;
+import net.lantrack.framework.security.store.SsoSessionIdHelper;
+import net.lantrack.framework.security.user.XxlSsoUser;
+import net.lantrack.framework.security.util.SsoTokenLoginHelper;
 import net.lantrack.project.sys.entity.SysUserEntity;
 import net.lantrack.project.sys.form.SysLoginForm;
 import net.lantrack.project.sys.service.SysCaptchaService;
@@ -22,7 +26,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
+import java.util.UUID;
 
 /**
  *@Description 登录
@@ -71,14 +75,25 @@ public class SysLoginController extends BaseController {
 		if(user == null || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
 			return getR().err("账号或密码不正确");
 		}
-
 		//账号锁定
 		if(user.getStatus() == 0){
 			return getR().err("账号已被锁定,请联系管理员");
 		}
+        //方案一 放入redis
+		// 1、make xxl-sso user
+		XxlSsoUser xxlUser = new XxlSsoUser();
+		xxlUser.setUserid(String.valueOf(user.getUserId()));
+		xxlUser.setUsername(user.getUsername());
+		xxlUser.setVersion(UUID.randomUUID().toString().replaceAll("-", ""));
+		xxlUser.setExpireMinite(SsoLoginStore.getRedisExpireMinite());
+		xxlUser.setExpireFreshTime(System.currentTimeMillis());
+		// 2、generate sessionId + storeKey
+		String sessionId = SsoSessionIdHelper.makeSessionId(xxlUser);
+		// 3、login, store storeKey
+		SsoTokenLoginHelper.login(sessionId, xxlUser);
 
-		//生成token，并保存到数据库
-		ReturnEntity r = sysUserTokenService.createToken(user.getUserId());
+		//方案二 生成token，并保存到数据库
+		ReturnEntity r = sysUserTokenService.createToken(sessionId,user.getUserId());
 		return r;
 	}
 

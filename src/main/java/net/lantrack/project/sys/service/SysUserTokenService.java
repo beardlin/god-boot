@@ -13,10 +13,10 @@ import net.lantrack.project.sys.entity.SysUserTokenEntity;
 public interface SysUserTokenService extends IService<SysUserTokenEntity> {
 
 	/**
-	 * 生成token
+	 * 保存token
 	 * @param userId  用户ID
 	 */
-	ReturnEntity createToken(long userId);
+	ReturnEntity createToken(String token,long userId);
 
 	/**
 	 * 退出，修改token值

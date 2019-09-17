@@ -4,6 +4,7 @@ package net.lantrack.project.sys.oauth2;
 import com.google.gson.Gson;
 import net.lantrack.framework.common.entity.ReturnEntity;
 import net.lantrack.framework.common.utils.HttpContextUtils;
+import net.lantrack.framework.security.conf.Conf;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.shiro.authc.AuthenticationException;
@@ -23,6 +24,8 @@ import java.io.IOException;
  *@Date 2019/8/23  10:27
  */
 public class OAuth2Filter extends AuthenticatingFilter {
+
+    private static final String SESSION_ID = Conf.SSO_SESSIONID;
 
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
@@ -87,11 +90,11 @@ public class OAuth2Filter extends AuthenticatingFilter {
      */
     private String getRequestToken(HttpServletRequest httpRequest){
         //从header中获取token
-        String token = httpRequest.getHeader("token");
+        String token = httpRequest.getHeader(SESSION_ID);
 
         //如果header中不存在token，则从参数中获取token
         if(StringUtils.isBlank(token)){
-            token = httpRequest.getParameter("token");
+            token = httpRequest.getParameter(SESSION_ID);
         }
 
         return token;

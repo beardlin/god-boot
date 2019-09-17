@@ -1,9 +1,12 @@
 package net.lantrack.framework.security.store;
 
 
+import net.lantrack.framework.common.utils.RedisUtils;
+import net.lantrack.framework.common.utils.SpringContextUtils;
 import net.lantrack.framework.security.conf.Conf;
 import net.lantrack.framework.security.user.XxlSsoUser;
 import net.lantrack.framework.security.util.JedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * local login store
@@ -12,7 +15,17 @@ import net.lantrack.framework.security.util.JedisUtil;
  */
 public class SsoLoginStore {
 
+
+    private static  RedisUtils redis;
+    //声明reid为静态，需从Bean容器中去获取
+    static {
+        if(SpringContextUtils.containsBean("redisUtils")){
+            redis = SpringContextUtils.getBean("redisUtils",RedisUtils.class);
+        }
+    }
+
     private static int redisExpireMinite = 1440;    // 1440 minite, 24 hour
+
     public static void setRedisExpireMinite(int redisExpireMinite) {
         if (redisExpireMinite < 30) {
             redisExpireMinite = 30;
@@ -30,13 +43,16 @@ public class SsoLoginStore {
      * @return
      */
     public static XxlSsoUser get(String storeKey) {
-
         String redisKey = redisKey(storeKey);
-        Object objectValue = JedisUtil.getObjectValue(redisKey);
-        if (objectValue != null) {
-            XxlSsoUser xxlUser = (XxlSsoUser) objectValue;
+        XxlSsoUser xxlUser = redis.get(redisKey, XxlSsoUser.class);
+        if(xxlUser != null){
             return xxlUser;
         }
+//        Object objectValue = JedisUtil.getObjectValue(redisKey);
+//        if (objectValue != null) {
+//            XxlSsoUser xxlUser = (XxlSsoUser) objectValue;
+//            return xxlUser;
+//        }
         return null;
     }
 
@@ -47,7 +63,8 @@ public class SsoLoginStore {
      */
     public static void remove(String storeKey) {
         String redisKey = redisKey(storeKey);
-        JedisUtil.del(redisKey);
+//        JedisUtil.del(redisKey);
+        redis.delete(redisKey);
     }
 
     /**
@@ -58,7 +75,8 @@ public class SsoLoginStore {
      */
     public static void put(String storeKey, XxlSsoUser xxlUser) {
         String redisKey = redisKey(storeKey);
-        JedisUtil.setObjectValue(redisKey, xxlUser, redisExpireMinite * 60);  // minite to second
+//        JedisUtil.setObjectValue(redisKey, xxlUser, redisExpireMinite * 60);  // minite to second
+        redis.set(redisKey, xxlUser, redisExpireMinite * 60);// minite to second
     }
 
     private static String redisKey(String sessionId){

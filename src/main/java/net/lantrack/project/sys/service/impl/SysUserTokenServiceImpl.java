@@ -3,6 +3,7 @@ package net.lantrack.project.sys.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import net.lantrack.framework.common.entity.ReturnEntity;
+import net.lantrack.framework.security.store.SsoLoginStore;
 import net.lantrack.project.sys.dao.SysUserTokenDao;
 import net.lantrack.project.sys.entity.SysUserTokenEntity;
 import net.lantrack.project.sys.oauth2.TokenGenerator;
@@ -19,14 +20,12 @@ import java.util.Date;
 @Service("sysUserTokenService")
 public class SysUserTokenServiceImpl extends ServiceImpl<SysUserTokenDao, SysUserTokenEntity> implements SysUserTokenService {
 
-	//12小时后过期
-	private final static int EXPIRE = 3600 * 12;
+	//24小时后过期
+	private final static int EXPIRE = SsoLoginStore.getRedisExpireMinite()*60;
 
 
 	@Override
-	public ReturnEntity createToken(long userId) {
-		//生成一个token
-		String token = TokenGenerator.generateValue();
+	public ReturnEntity createToken(String token,long userId) {
 
 		//当前时间
 		Date now = new Date();

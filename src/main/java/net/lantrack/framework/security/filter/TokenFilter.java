@@ -15,9 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class XxlTokenFilter extends HttpServlet implements Filter {
+/**
+ *@Description 查看请求是否有效
+ *@Author lantrack
+ *@Date 2019/9/17  9:46
+ */
+public class TokenFilter extends HttpServlet implements Filter {
 
-    private static Logger logger = LoggerFactory.getLogger(XxlTokenFilter.class);
+    private static Logger logger = LoggerFactory.getLogger(TokenFilter.class);
 
     private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
 

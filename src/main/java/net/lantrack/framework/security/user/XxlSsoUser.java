@@ -14,10 +14,12 @@ public class XxlSsoUser implements Serializable {
     // field
     private String userid;
     private String username;
-    private Map<String, String> plugininfo;
 
+    //当前用户登录版本
     private String version;
+    //设置redis时间
     private int expireMinite;
+    //刷新时间
     private long expireFreshTime;
 
 
@@ -36,14 +38,6 @@ public class XxlSsoUser implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public Map<String, String> getPlugininfo() {
-        return plugininfo;
-    }
-
-    public void setPlugininfo(Map<String, String> plugininfo) {
-        this.plugininfo = plugininfo;
     }
 
     public String getVersion() {
