@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.flow.dao.ActFlowNodeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.flow.entity.ActFlowNodeEntity" id="actFlowNodeMap">
+        <result property="id" column="id"/>
+        <result property="flowId" column="flow_id"/>
+        <result property="nodeName" column="node_name"/>
+        <result property="approverType" column="approver_type"/>
+        <result property="approverId" column="approver_id"/>
+        <result property="crosOffcie" column="cros_offcie"/>
+        <result property="approverOffice" column="approver_office"/>
+        <result property="nodeSort" column="node_sort"/>
+        <result property="nodeType" column="node_type"/>
+        <result property="endFlow" column="end_flow"/>
+        <result property="returnTo" column="return_to"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="stand1" column="stand1"/>
+        <result property="stand2" column="stand2"/>
+        <result property="stand3" column="stand3"/>
+        <result property="stand4" column="stand4"/>
+        <result property="stand5" column="stand5"/>
+        <result property="stand6" column="stand6"/>
+    </resultMap>
+
+
+</mapper>

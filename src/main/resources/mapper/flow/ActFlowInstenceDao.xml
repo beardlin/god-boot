@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.flow.dao.ActFlowInstenceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.flow.entity.ActFlowInstenceEntity" id="actFlowInstenceMap">
+        <result property="id" column="id"/>
+        <result property="flowId" column="flow_id"/>
+        <result property="codeRule" column="code_rule"/>
+        <result property="flowCode" column="flow_code"/>
+        <result property="codeAoto" column="code_aoto"/>
+        <result property="dataId" column="data_id"/>
+        <result property="tableName" column="table_name"/>
+        <result property="tableJson" column="table_json"/>
+        <result property="flowStatus" column="flow_status"/>
+        <result property="approverType" column="approver_type"/>
+        <result property="approverId" column="approver_id"/>
+        <result property="approverOffice" column="approver_office"/>
+        <result property="nodeRecordId" column="node_record_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="stand1" column="stand1"/>
+        <result property="stand2" column="stand2"/>
+        <result property="stand3" column="stand3"/>
+        <result property="stand4" column="stand4"/>
+        <result property="stand5" column="stand5"/>
+        <result property="stand6" column="stand6"/>
+    </resultMap>
+
+
+    <select id="selectMaxCodeAotoByFlowId" resultType="Integer">
+      select max(code_aoto)  from Act_Flow_Instence where flow_id = #{flowId}
+    </select>
+
+    <select id="selectHistoryFlowPage" resultMap="actFlowInstenceMap">
+       select distinct i.*  from Act_Flow_Instence i , act_node_record r
+       where i.id = r.flow_instance_id
+       and r.node_type in (0,1,2)
+       and i.table_name = #{req.tableName}
+       and r.approver_id= #{req.userId}
+    </select>
+    <select id="selectTodoFlowPage" resultMap="actFlowInstenceMap">
+       select  i.*  from Act_Flow_Instence i
+       where i.table_name = #{req.tableName}
+       and flow_status=1
+       and (( approver_id= #{req.userId}  and approver_type=1)
+       or (approver_type=2 AND approver_office= #{req.approverOffice}
+       and approver_id in
+       <foreach collection="req.dutyIds" item="id" index="index" open="(" close=")" separator=",">
+           #{id}
+       </foreach>
+       ) )
+    </select>
+
+</mapper>

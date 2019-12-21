@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.sys.dao.SysDictDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.sys.entity.SysDictEntity" id="sysDictMap">
+        <result property="id" column="id"/>
+        <result property="dKey" column="d_key"/>
+        <result property="dVal" column="d_val"/>
+        <result property="dType" column="d_type"/>
+        <result property="dLable" column="d_lable"/>
+        <result property="dSort" column="d_sort"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+
+</mapper>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.flow.dao.ActFlowDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.flow.entity.ActFlowEntity" id="actFlowMap">
+        <result property="id" column="id"/>
+        <result property="flowName" column="flow_name"/>
+        <result property="flowCode" column="flow_code"/>
+        <result property="flowType" column="flow_type"/>
+        <result property="flowTypeName" column="flow_type_name"/>
+        <result property="flowDesc" column="flow_desc"/>
+        <result property="flowNodeType" column="flow_node_type"/>
+        <result property="flowNodeTypeName" column="flow_node_type_name"/>
+        <result property="formType" column="form_type"/>
+        <result property="flowScope" column="flow_scope"/>
+        <result property="fromJson" column="from_json"/>
+        <result property="tableName" column="table_name"/>
+        <result property="routerUrl" column="router_url"/>
+        <result property="flowStatus" column="flow_status"/>
+        <result property="publishDate" column="publish_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="stand1" column="stand1"/>
+        <result property="stand2" column="stand2"/>
+        <result property="stand3" column="stand3"/>
+        <result property="stand4" column="stand4"/>
+        <result property="stand5" column="stand5"/>
+        <result property="stand6" column="stand6"/>
+    </resultMap>
+
+
+</mapper>

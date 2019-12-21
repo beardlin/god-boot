@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.survey.dao.LcAnswerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.survey.entity.LcAnswerEntity" id="lcAnswerMap">
+        <result property="id" column="id"/>
+        <result property="themeId" column="theme_id"/>
+        <result property="ansTime" column="ans_time"/>
+        <result property="ansStatus" column="ans_status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+    </resultMap>
+    <!--保存答案-->
+    <insert id="saveAnswer" >
+         INSERT INTO lc_answer(
+           id,theme_id,ans_time,
+           ans_status, create_by, create_date )
+    VALUES  (
+        #{result.id},
+        #{result.themeId},
+        #{result.ansTime},
+        #{result.ansStatus},
+        #{result.createBy},
+        #{result.createDate}
+        )
+    </insert>
+
+</mapper>

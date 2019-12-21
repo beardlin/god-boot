@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.survey.dao.LcThemeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.survey.entity.LcThemeEntity" id="lcThemeMap">
+        <result property="id" column="id"/>
+        <result property="tableTitle" column="table_title"/>
+        <result property="themeId" column="theme_id"/>
+        <result property="tableExplain" column="table_explain"/>
+        <result property="tableCode" column="table_code"/>
+        <result property="tableStatus" column="table_status"/>
+        <result property="hiddenCode" column="hidden_code"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="remarks" column="remarks"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="answerLimit" column="answer_limit"/>
+        <result property="answerNum" column="answer_num"/>
+        <result property="answerPwd" column="answer_pwd"/>
+    </resultMap>
+    <!--插入模板-->
+    <insert id="insertTheme" >
+    INSERT INTO lc_theme
+    ( id,theme_id,table_title, table_explain, table_code,
+    table_status, hidden_code, create_by, create_date, update_by,
+    update_date,answer_limit,answer_num,answer_pwd )
+    VALUES  (
+        #{result.id},
+        #{result.themeId},
+        #{result.tableTitle},
+        #{result.tableExplain},
+        #{result.tableCode},
+        #{result.tableStatus},
+        #{result.hiddenCode},
+        #{result.createBy},
+        #{result.createDate},
+        #{result.updateBy},
+        #{result.updateDate},
+        #{result.answerLimit},
+        #{result.answerNum},
+        #{result.answerPwd}
+        )
+    </insert>
+
+</mapper>

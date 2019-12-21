@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.sys.dao.SysFileDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.sys.entity.SysFileEntity" id="sysFileMap">
+        <result property="id" column="id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="oldName" column="old_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="useStatus" column="use_status"/>
+        <result property="fileType" column="file_type"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="uploadTime" column="upload_time"/>
+        <result property="uploadBy" column="upload_by"/>
+    </resultMap>
+
+    <!--将文件由垃圾状态改为持久状态-->
+    <update id="persistFile" >
+        update sys_file set use_status = 1 where id in
+        <foreach collection="fileIds" item="fid" separator="," open="(" close=")" >
+            #{fid}
+        </foreach>
+    </update>
+
+</mapper>

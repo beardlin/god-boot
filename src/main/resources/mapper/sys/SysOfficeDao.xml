@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.lantrack.module.sys.dao.SysOfficeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="net.lantrack.module.sys.entity.SysOfficeEntity" id="sysOfficeMap">
+        <result property="id" column="id"/>
+        <result property="pId" column="p_id"/>
+        <result property="oName" column="o_name"/>
+        <result property="oSort" column="o_sort"/>
+        <result property="oType" column="o_type"/>
+        <result property="oTypeName" column="o_type_name"/>
+        <result property="oMasterId" column="o_master_id"/>
+        <result property="oMasterName" column="o_master_name"/>
+        <result property="oEmail" column="o_email"/>
+        <result property="oPhone" column="o_phone"/>
+        <result property="oAddress" column="o_address"/>
+        <result property="oStatus" column="o_status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remarks" column="remarks"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+    <resultMap id="treeMap" type="net.lantrack.module.sys.model.TreeModel">
+        <result column="id" property="id" />
+        <result column="o_name" property="title" />
+        <result column="o_type" property="type" />
+        <collection property="children" column="id" select="getChildren"/>
+    </resultMap>
+
+    <select id="queryByPid" resultMap="sysOfficeMap" >
+        select * from sys_office where p_id = #{id}
+    </select>
+
+    <select id="getChildren" resultMap="treeMap">
+        select
+            id,
+            o_name,
+            o_type
+        from sys_office where p_id = #{id}
+        order by o_sort
+    </select>
+
+    <select id="getTree" resultMap="treeMap">
+        select
+            id,
+            o_name,
+            o_type
+        from sys_office where id = #{id}
+    </select>
+
+</mapper>
